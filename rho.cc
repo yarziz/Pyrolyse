@@ -64,24 +64,21 @@ int main(){
     name_file="Result"+to_string(j);
     name_file="Result"+to_string(k);
     mon_flux.open(name_file, ios::out);
-    for(int k=1;k<n;k++){
-      rhon[k]=(1-e(k*dx,j*dt,dt))*rho[k]+1000*e(k*dx,j*dt,dt);
-      for(int z=0; z<zmax+1;z++ ){
-	kk=remplissage(n,x,c,v,min);
-	xn=resol(kk,b,n);
-	cout<<"error_1= "<<max_error_vector(x,xn,n)<<endl;
-	if(max_error_vector(x,xn,n)<epsilon){
-	  break;
-	}
-	x=xn;
+    for(int z=0; z<zmax+1;z++ ){
+      for(int k=0;k<n;k++){
+	rhon[k]=(1-e(k*dx,j*dt,dt))*rho[k]+1000*e(k*dx,j*dt,dt);
+	mon_flux << xn[k] << " " << rhon[k] << endl;
+	//mon_flux << j*dt << " " << brhon << endl;
       }
-
-      
-      //brhon=(1-e(k*dx,j*dt,dt))*arho+1000*e(k*dx,j*dt,dt);
-      //arho=brhon;
-      mon_flux << k*dx << " " << rhon[k] << endl;
-      //mon_flux << j*dt << " " << brhon << endl;
+      kk=remplissage(n,x,min);
+      xn=resol(kk,b,n);
+      cout<<"error_1= "<<max_error_vector(x,xn,n)<<endl;
+      if(max_error_vector(x,xn,n)<epsilon){
+	break;
+      }
+      x=xn;
     }
+   
     rho=rhon;
     mon_flux.close();
 
