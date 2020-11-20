@@ -29,13 +29,13 @@ double u_seconde(vector<double> x,vector<double> rho, int j){
   return 2*(a+b)/(x[j+1]-x[j-1]);
 }  
 
-vector<vector<double>> remplissage(int n, vector<double> x, double c, double v, double min){
+vector<vector<double>> remplissage(int n, vector<double> x,vector<double> rho, double min){
   vector<double> kr(n+1);
   vector<double> metr(n+1);
   vector<vector<double>> kk(n+1,vector<double>(n+1,0.));
   
   for(int j=0;j<n+1;j++){
-    metr[j]=max(abs(u_seconde(x[j],c,v)),min);
+    metr[j]=max(abs(u_seconde(x,rho,j)),min);
     // cout<<"vl"<<abs(u_seconde(x_j,c,v))<<endl;
   }
 
