@@ -1,7 +1,7 @@
 #include<vector>
 
-using namespace std;
 
-vector<double> resol(vector<vector<double>> l, vector<double> b, int n);
 
-double max_error_vector(vector<double> a,vector<double> b,int n);
+std::vector<double> resol(std::vector<std::vector<double>> l, std::vector<double> b, int n);
+
+double max_error_vector(std::vector<double> a,std::vector<double> b,int n);

@@ -3,6 +3,7 @@
 #include<cmath>
 #include<vector>
 #include<string>
+#include "LU.h"
 
 using namespace std;
 
@@ -15,45 +16,73 @@ double e(double x, double t, double dt){
   return 3000*exp((-6000)/(Temp(x,t)*1.));
 }
 
+double u_seconde(vector<double> x,vector<double> rho, int j){
+  if(j==0){
+    return 2*((rho[j+1]-rho[j])/pow(x[j+1]-x[j],2.));
+  }
+  if(j==x.size()-1){
+    return 2*((rho[j-1]-rho[j])/pow(x[j]-x[j-1],2.));
+  }
+
+  double a=(rho[j+1]-rho[j])/(x[j+1]-x[j]);
+  double b=(rho[j-1]-rho[j])/(x[j]-x[j-1]);
+  return 2*(a+b)/(x[j+1]-x[j-1]);
+  
+}  
+
+
 
 int main(){
   int B=3000;
   int Ta=6000;
-  int n=100;
   int p=100;
+  int n=100;
+  int zmax=30;
   double rhov=1500;
-  double arho=1500;
-  double brhon=0;
+  double rhop=1000;
   double dt(0), dx(0);
-  vector<double> rho(p),rhon(p);
-  dt=10/(n*1.);
-  dx=0.01/(p*1.);
+  vector<double> x(n+1,0.),b(n+1,0.),xn(n+1,0.);
+  vector<double> rho(n+1),rhon(n+1);
+  dt=10/(p*1.);
+  dx=0.01/(n*1.);
   ofstream mon_flux;
   string name_file="Result"+to_string(0);
   mon_flux.open(name_file, ios::out); // Ouvre un fichier appelé name_file
   cout.precision(15);
   
-  for(int i=0;i<p;i++){
+  for(int i=0;i<n+1;i++){
     rho[i]=rhov;
+    x[i]=i*dx;
     mon_flux << i*dx << " " << rho[i] << endl;
   }
+  b[n]=pow(10,12)*1.;
   mon_flux.close();
  
   
-  for (int k=0;k<p;k++){
+  for (int j=1;j<p;j++){
     ofstream mon_flux;
-    //name_file="Result"+to_string(j);
+    name_file="Result"+to_string(j);
     name_file="Result"+to_string(k);
     mon_flux.open(name_file, ios::out);
-    arho=1500;
-    for(int j=1;j<n;j++){
-      //rhon[k]=(1-e(k*dx,j*dt,dt))*rho[k]+1000*e(k*dx,j*dt,dt);
-      brhon=(1-e(k*dx,j*dt,dt))*arho+1000*e(k*dx,j*dt,dt);
-      arho=brhon;
-      //mon_flux << k*dx << " " << rhon[k] << endl;
-      mon_flux << j*dt << " " << brhon << endl;
+    for(int k=1;k<n;k++){
+      rhon[k]=(1-e(k*dx,j*dt,dt))*rho[k]+1000*e(k*dx,j*dt,dt);
+      for(int z=0; z<zmax+1;z++ ){
+	kk=remplissage(n,x,c,v,min);
+	xn=resol(kk,b,n);
+	cout<<"error_1= "<<max_error_vector(x,xn,n)<<endl;
+	if(max_error_vector(x,xn,n)<epsilon){
+	  break;
+	}
+	x=xn;
+      }
+
+      
+      //brhon=(1-e(k*dx,j*dt,dt))*arho+1000*e(k*dx,j*dt,dt);
+      //arho=brhon;
+      mon_flux << k*dx << " " << rhon[k] << endl;
+      //mon_flux << j*dt << " " << brhon << endl;
     }
-    //rho=rhon;
+    rho=rhon;
     mon_flux.close();
 
   }
