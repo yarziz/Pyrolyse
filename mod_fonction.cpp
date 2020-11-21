@@ -4,6 +4,7 @@
 #include<vector>
 #include<string>
 #include "LU.h"
+#include "mod_fonction.h"
 
 using namespace std;
 
