@@ -1,0 +1,4 @@
+#include<vector>
+
+
+void affichage_matrice(std::vector<std::vector<double>> kk,int n);

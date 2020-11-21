@@ -18,6 +18,12 @@ double e(double x, double t, double dt){
   return 3000*exp((-6000)/(Temp(x,t)*1.));
 }
 
+
+double ue(double x,double t, double c, double v){
+  double a=0;
+  a=1/(c*(1-exp(c/v)));
+  return a*(exp((c*x)/v)-1)+x/c+t*t;}
+
 double u_seconde(vector<double> x,vector<double> rho, int j,int n){
   if(j==0){
     return 2*((rho[j+1]-rho[j])/pow(x[j+1]-x[j],2.));
@@ -63,14 +69,16 @@ vector<vector<double>> remplissage(int n, vector<double> x,vector<double> rhon, 
 
 
 
-vector<double> new_rho(vector<double> x,double rhov,int j,int n,double dt){
+vector<double> new_rho(vector<double> x,double rhov,int j,int n,double dt,double c,double v){
   vector<double> rho(n+1,rhov);
   vector<double> rhon(n+1);
+  vector<double> un(n+1);
   if(j==0){
-    return rho;
+    return rho ;
   }
   for(int p=0;p<j;p++){
     for(int k=0;k<n+1;k++){
+      //un[k]=u[k]+dt*a*(exp((c*x[k])/v)-1)+x[k]/c+2*j*dt;
       rhon[k]=(1-e(x[k],(p)*dt,dt))*rho[k]+1000*e(x[k],(p)*dt,dt);
     }
     rho=rhon;
@@ -82,17 +90,19 @@ vector<double> new_rho(vector<double> x,double rhov,int j,int n,double dt){
 
 int main(){
   int B=3000;
+  double c=0.5;
+  double v=0.01;
   int Ta=6000;
   int p=100;
-  int n=20;
-  int zmax=30;
+  int n=30;
+  int zmax=200;
   double rhov=1500;
   double rhop=1000;
   double min=12;
-  double epsilon=0.000001;
+  double epsilon=0.00001;
   double dt(0), dx(0);
-  vector<double> x(n+1,0.),b(n+1,0.),xn(n+1,0.);
-  vector<double> rho(n+1,rhov),rhon(n+1);
+  vector<double> x(n+1,0.),xx(n+1,0.),b(n+1,0.),xn(n+1,0.);
+  vector<double> rho(n+1,rhov),rhon(n+1),u(n+1,0),un(n+1,0),ui(n+1);
   vector<vector<double>> kk(n+1,vector<double>(n+1,0.));
 
   
@@ -105,11 +115,13 @@ int main(){
   
   for(int i=0;i<n+1;i++){
     x[i]=i*dx;
+    // u(i)=ue(x[i],0,c,v);
+    //mon_flux << i*dx << " " << u[i] << endl;
     mon_flux << i*dx << " " << rho[i] << endl;
   }
   b[n]=pow(10,10)*1.;
   mon_flux.close();
- 
+  //ui=u
   
   for (int j=0;j<p+1;j++){
     ofstream mon_flux;
@@ -117,29 +129,47 @@ int main(){
     mon_flux.open(name_file, ios::out);
     for(int z=0; z<zmax+1;z++ ){
       for(int k=0;k<n+1;k++){
+	//un[k]=u[k]+dt*a*(exp((c*x[k])/v)-1)+x[k]/c+2*j*dt;
 	rhon[k]=(1-e(x[k],(j)*dt,dt))*rho[k]+1000*e(x[k],(j)*dt,dt);
       }
+      if(j>39){
+	 min=1000000;
+      }
+
+
+      if(j>59){
+	 min=100000000;
+      }
       kk=remplissage(n,x,rhon,min);
+     
+      //kk=remplissage(n,x,un,min);
       //affichage_matrice(kk,n);
       xn=resol(kk,b,n);
       //affichage_vector(xn,n);
-     
-      rho=new_rho(xn,rhov,j,n,dt);
+
+      if(j>0){
+	rho=new_rho(xn,rhov,j,n,dt,c,v);
+         }
       //affichage_vector(rho,n);
       
-     
+      xx=x;
+      if(j==44){
+	//	affichage_matrice(kk,n);
+      }
       if(max_error_vector(x,xn,n)<epsilon){
-        cout<<"error_1= "<<max_error_vector(x,xn,n)<<" instant"<<j+1<<endl;
+	 cout<<"error_1= "<<max_error_vector(x,xn,n)<<" instant"<<j+1<<endl;
 	cout<<"*************************"<<endl;
 	break;
       }
+     
       x=xn;
     }
+    
     for(int o=0;o<n+1;o++){
-      //rhon[o]=(1-e(xn[o],j*dt,dt))*rho[o]+1000*e(xn[o],j*dt,dt);
-      mon_flux << x[o] << " " << rhon[o] << endl;
+      mon_flux << xx[o] << " " << rhon[o] << endl;
     }
     rho=rhon;
+    //u=un;
     mon_flux.close();
 
   }
