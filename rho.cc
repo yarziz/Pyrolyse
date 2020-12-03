@@ -39,11 +39,20 @@ double u_seconde(vector<double> x,vector<double> rho, int j,int n){
 
 vector<vector<double>> remplissage(int n, vector<double> x,vector<double> rhon, double min){
   vector<double> kr(n+1);
+  vector<double> u(n+1),uu(n+1,0);
   vector<double> metr(n+1);
   vector<vector<double>> kk(n+1,vector<double>(n+1,0.));
+   double max_u=0;
   
   for(int j=0;j<n+1;j++){
-    metr[j]=max(abs(u_seconde(x,rhon,j,n)),min);
+    u[j]=abs(u_seconde(x,rhon,j,n));
+    // cout<<"vl"<<abs(u_seconde(x_j,c,v))<<endl;
+  }
+  max_u=max_error_vector(u,uu,n);
+
+
+  for(int j=0;j<n+1;j++){
+    metr[j]=max(abs(u_seconde(x,rhon,j,n))/max_u,min);
     // cout<<"vl"<<abs(u_seconde(x_j,c,v))<<endl;
   }
 
@@ -98,7 +107,7 @@ int main(){
   int zmax=200;
   double rhov=1500;
   double rhop=1000;
-  double min=12;
+  double min=1;
   double epsilon=0.00001;
   double dt(0), dx(0);
   vector<double> x(n+1,0.),xx(n+1,0.),b(n+1,0.),xn(n+1,0.);
@@ -132,6 +141,8 @@ int main(){
 	//un[k]=u[k]+dt*a*(exp((c*x[k])/v)-1)+x[k]/c+2*j*dt;
 	rhon[k]=(1-e(x[k],(j)*dt,dt))*rho[k]+1000*e(x[k],(j)*dt,dt);
       }
+
+      /*
       if(j>39){
 	 min=1000000;
       }
@@ -139,7 +150,7 @@ int main(){
 
       if(j>59){
 	 min=100000000;
-      }
+	 }*/
       kk=remplissage(n,x,rhon,min);
      
       //kk=remplissage(n,x,un,min);
