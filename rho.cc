@@ -52,7 +52,7 @@ vector<vector<double>> remplissage(int n, vector<double> x,vector<double> rhon, 
 
 
   for(int j=0;j<n+1;j++){
-    metr[j]=max(abs(u_seconde(x,rhon,j,n))/max_u,min);
+    metr[j]=max((u[j]/(max_u*1.)),min);
     // cout<<"vl"<<abs(u_seconde(x_j,c,v))<<endl;
   }
 
@@ -104,10 +104,10 @@ int main(){
   int Ta=6000;
   int p=100;
   int n=30;
-  int zmax=200;
+  int zmax=100;
   double rhov=1500;
   double rhop=1000;
-  double min=1;
+  double min=0.1;
   double epsilon=0.00001;
   double dt(0), dx(0);
   vector<double> x(n+1,0.),xx(n+1,0.),b(n+1,0.),xn(n+1,0.);
