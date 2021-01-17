@@ -138,55 +138,39 @@ int main(){
     mon_flux.open(name_file, ios::out);
     for(int z=0; z<zmax+1;z++ ){
       for(int k=0;k<n+1;k++){
-	//un[k]=u[k]+dt*a*(exp((c*x[k])/v)-1)+x[k]/c+2*j*dt;
 	rhon[k]=(1-e(x[k],(j)*dt,dt))*rho[k]+1000*e(x[k],(j)*dt,dt);
       }
 
-      /*
-      if(j>39){
-	 min=1000000;
-      }
-
-
-      if(j>59){
-	 min=100000000;
-	 }*/
       kk=remplissage(n,x,rhon,min);
-     
-      //kk=remplissage(n,x,un,min);
-      //affichage_matrice(kk,n);
       xn=resol(kk,b,n);
-      //affichage_vector(xn,n);
-
+   
       if(j>0){
 	rho=new_rho(xn,rhov,j,n,dt,c,v);
          }
-      //affichage_vector(rho,n);
+      
       
       xx=x;
-      if(j==44){
-	//	affichage_matrice(kk,n);
-      }
+      
       if(max_error_vector(x,xn,n)<epsilon){
-	 cout<<"error_1= "<<max_error_vector(x,xn,n)<<" instant"<<j+1<<endl;
-	cout<<"*************************"<<endl;
+	// cout<<"error_1= "<<max_error_vector(x,xn,n)<<" instant"<<j+1<<endl;
+	//cout<<"*************************"<<endl;
 	break;
       }
      
       x=xn;
     }
+
+    if(j==12){
+	affichage_vector(rhon,n);
+      }
     
     for(int o=0;o<n+1;o++){
       mon_flux << xx[o] << " " << rhon[o] << endl;
     }
     rho=rhon;
-    //u=un;
     mon_flux.close();
 
   }
-  //cout<<"la valeur et"<<rho.size()<<endl;
-  
-
-
+ 
   return 0;
 }
