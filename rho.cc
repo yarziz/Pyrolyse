@@ -3,6 +3,7 @@
 #include<cmath>
 #include<vector>
 #include<string>
+#include<iomanip>
 #include "LU.h"
 #include "mod_fonction.h"
 
@@ -160,12 +161,12 @@ int main(){
       x=xn;
     }
 
-    if(j==12){
+    if(j==1){
 	affichage_vector(rhon,n);
       }
     
     for(int o=0;o<n+1;o++){
-      mon_flux << xx[o] << " " << rhon[o] << endl;
+      mon_flux<<xx[o]<<" "<<std::setprecision(16)<< rhon[o] << endl;
     }
     rho=rhon;
     mon_flux.close();
