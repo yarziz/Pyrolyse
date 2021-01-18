@@ -1,0 +1,4 @@
+i = i + 1
+rho = sprintf('Result%d', i)
+plot rho 
+if (i < end) reread;
